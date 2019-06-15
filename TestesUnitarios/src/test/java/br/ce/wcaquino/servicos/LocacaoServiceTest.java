@@ -8,7 +8,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
 
+import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 import static br.ce.wcaquino.utils.DataUtils.isMesmaData;
 import static br.ce.wcaquino.utils.DataUtils.obterDataComDiferencaDias;
@@ -36,13 +39,16 @@ public class LocacaoServiceTest {
     public void testeLocacao() throws Exception {
         // Cenário
         Usuario usuario = new Usuario("Usuário 1");
-        Filme filme = new Filme("Filme 1", 2, 5.0);
+        List<Filme> filmes =
+                Arrays.asList(
+                        new Filme("Filme 1", 2, 5.0),
+                        new Filme("Filme 2", 3, 4.5));
 
         // Ação
-        Locacao locacao = locacaoService.alugarFilme(usuario, filme);
+        Locacao locacao = locacaoService.alugarFilme(usuario, filmes);
 
             // Verificação
-            error.checkThat(locacao.getValor(), is(equalTo(5.0)));
+            error.checkThat(locacao.getValor(), is(equalTo(9.5)));
             error.checkThat(locacao.getValor(), is(not(5.01)));
             error.checkThat(isMesmaData(locacao.getDataLocacao(), new Date()), is(true));
             error.checkThat(isMesmaData(locacao.getDataRetorno(), obterDataComDiferencaDias(1)), is(true));
