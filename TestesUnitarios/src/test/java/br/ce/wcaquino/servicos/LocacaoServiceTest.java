@@ -5,6 +5,8 @@ import br.ce.wcaquino.entidades.Locacao;
 import br.ce.wcaquino.entidades.Usuario;
 import br.ce.wcaquino.exceptions.FilmeSemEstoqueException;
 import br.ce.wcaquino.exceptions.LocadoraException;
+import br.ce.wcaquino.matchers.DiaSemanaMatchers;
+import br.ce.wcaquino.matchers.MatchersProprios;
 import br.ce.wcaquino.utils.DataUtils;
 import org.junit.*;
 import org.junit.rules.ErrorCollector;
@@ -15,12 +17,17 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import static br.ce.wcaquino.matchers.MatchersProprios.caiEm;
+import static br.ce.wcaquino.matchers.MatchersProprios.caiNumaSegunda;
 import static br.ce.wcaquino.utils.DataUtils.isMesmaData;
 import static br.ce.wcaquino.utils.DataUtils.obterDataComDiferencaDias;
+import static java.util.Calendar.MONDAY;
+import static java.util.Calendar.SATURDAY;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.*;
+import static org.junit.Assume.assumeTrue;
 
 public class LocacaoServiceTest {
 
@@ -47,7 +54,7 @@ public class LocacaoServiceTest {
     @Test
     public void deveAlugarFilme() throws Exception {
 
-        Assume.assumeFalse(DataUtils.verificarDiaSemana(new Date() ,Calendar.SATURDAY));
+        Assume.assumeFalse(DataUtils.verificarDiaSemana(new Date() , SATURDAY));
 
         // Cenário
         Usuario usuario = new Usuario("Usuário 1");
@@ -106,7 +113,7 @@ public class LocacaoServiceTest {
     @Test
     public void deveDevolverSegundaQuandoAlugadoSabado() throws FilmeSemEstoqueException, LocadoraException {
 
-        Assume.assumeTrue(DataUtils.verificarDiaSemana(new Date() , Calendar.SATURDAY));
+        assumeTrue(DataUtils.verificarDiaSemana(new Date() , SATURDAY));
 
         // Cenário
         Usuario usuario = new Usuario("Usuário 4");
@@ -118,8 +125,12 @@ public class LocacaoServiceTest {
         Locacao retorno = locacaoService.alugarFilme(usuario, filmes);
 
         // Verificacao
-        boolean ehSegunda = DataUtils.verificarDiaSemana(retorno.getDataRetorno(), Calendar.MONDAY);
+        boolean ehSegunda = DataUtils.verificarDiaSemana(retorno.getDataRetorno(), MONDAY);
         assertTrue(ehSegunda);
+
+        assertThat(retorno.getDataRetorno(), new DiaSemanaMatchers(MONDAY));
+        assertThat(retorno.getDataRetorno(), caiEm(MONDAY));
+        assertThat(retorno.getDataRetorno(), caiNumaSegunda());
 
     }
 
