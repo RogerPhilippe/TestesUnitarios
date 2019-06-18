@@ -13,5 +13,5 @@ import org.junit.runners.Suite;
         LocacaoServiceTest.class
 })
 public class SuiteExecucao {
-    
+
 }
