@@ -7,10 +7,12 @@ import br.ce.wcaquino.exceptions.FilmeSemEstoqueException;
 import br.ce.wcaquino.exceptions.LocadoraException;
 import br.ce.wcaquino.matchers.DiaSemanaMatchers;
 import br.ce.wcaquino.utils.DataUtils;
+import org.hamcrest.MatcherAssert;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+
 import org.junit.rules.ErrorCollector;
 import org.junit.rules.ExpectedException;
 
@@ -129,9 +131,9 @@ public class LocacaoServiceTest {
         boolean ehSegunda = DataUtils.verificarDiaSemana(retorno.getDataRetorno(), MONDAY);
         assertTrue(ehSegunda);
 
-        assertThat(retorno.getDataRetorno(), new DiaSemanaMatchers(MONDAY));
-        assertThat(retorno.getDataRetorno(), caiEm(MONDAY));
-        assertThat(retorno.getDataRetorno(), caiNumaSegunda());
+        MatcherAssert.assertThat(retorno.getDataRetorno(), new DiaSemanaMatchers(MONDAY));
+        MatcherAssert.assertThat(retorno.getDataRetorno(), caiEm(MONDAY));
+        MatcherAssert.assertThat(retorno.getDataRetorno(), caiNumaSegunda());
 
     }
 
