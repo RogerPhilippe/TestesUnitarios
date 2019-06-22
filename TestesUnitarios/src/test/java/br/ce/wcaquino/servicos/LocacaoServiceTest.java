@@ -8,6 +8,7 @@ import br.ce.wcaquino.exceptions.FilmeSemEstoqueException;
 import br.ce.wcaquino.exceptions.LocadoraException;
 import br.ce.wcaquino.matchers.DiaSemanaMatchers;
 import br.ce.wcaquino.utils.DataUtils;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -19,9 +20,7 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import javax.xml.crypto.Data;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -70,6 +69,7 @@ public class LocacaoServiceTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
+        locacaoService = PowerMockito.spy(locacaoService);
     }
 
     @Test
@@ -253,6 +253,24 @@ public class LocacaoServiceTest {
         assertThat(locacaoRetorno.getValor(), is(12.0));
         assertThat(locacaoRetorno.getDataLocacao(), ehHoje());
         assertThat(locacaoRetorno.getDataRetorno(), ehHojeComDiferencaDias(3));
+
+    }
+
+    @Test
+    public void deveAlugarFilmeSemCalcularValor() throws Exception {
+
+        // Cenário
+        Usuario usuario = umUsuario().agora();
+        List<Filme> filmes = Arrays.asList(umFilme().agora());
+
+        PowerMockito.doReturn(1.0).when(locacaoService, "getCalcularValorLocacao", filmes);
+
+        // Ação
+        Locacao locacao = locacaoService.alugarFilme(usuario, filmes);
+
+        // Verificação
+        Assert.assertThat(locacao.getValor(), is(1.0));
+        PowerMockito.verifyPrivate(locacaoService).invoke("getCalcularValorLocacao", filmes);
 
     }
 
