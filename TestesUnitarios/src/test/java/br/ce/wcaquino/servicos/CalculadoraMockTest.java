@@ -1,11 +1,35 @@
 package br.ce.wcaquino.servicos;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Mockito;
+import org.mockito.*;
 
 public class CalculadoraMockTest {
+
+    @Mock
+    private Calculadora calculadoraMock;
+
+    @Spy
+    private Calculadora calculadoraSpy;
+
+    @Before
+    public void setup() {
+        MockitoAnnotations.initMocks(this);
+    }
+
+    @Test
+    public void devoMostrarDiferencaMockSpy() {
+
+        // Comportamento Mock
+        Mockito.when(calculadoraMock.somar(1, 2)).thenCallRealMethod();
+        System.out.println("Mock: "+calculadoraMock.somar(1, 2));
+
+        // Compórtamento Spy
+        Mockito.when(calculadoraSpy.somar(1, 2)).thenReturn(8);
+        System.out.println("Spy: "+calculadoraSpy.somar(1, 1));
+
+    }
 
     @Test
     public void test2() {

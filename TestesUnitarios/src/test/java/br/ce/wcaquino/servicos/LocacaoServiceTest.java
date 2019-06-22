@@ -1,6 +1,5 @@
 package br.ce.wcaquino.servicos;
 
-import br.ce.wcaquino.builders.LocacaoBuilder;
 import br.ce.wcaquino.daos.LocacaoDAO;
 import br.ce.wcaquino.entidades.Filme;
 import br.ce.wcaquino.entidades.Locacao;
@@ -9,11 +8,18 @@ import br.ce.wcaquino.exceptions.FilmeSemEstoqueException;
 import br.ce.wcaquino.exceptions.LocadoraException;
 import br.ce.wcaquino.matchers.DiaSemanaMatchers;
 import br.ce.wcaquino.utils.DataUtils;
-import org.junit.*;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.rules.ErrorCollector;
 import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
 import org.mockito.*;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
+import javax.xml.crypto.Data;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -22,19 +28,17 @@ import static br.ce.wcaquino.builders.FilmeBuilder.umFilme;
 import static br.ce.wcaquino.builders.LocacaoBuilder.umLocacao;
 import static br.ce.wcaquino.builders.UsuarioBuilder.umUsuario;
 import static br.ce.wcaquino.matchers.MatchersProprios.*;
-import static br.ce.wcaquino.utils.DataUtils.isMesmaData;
-import static br.ce.wcaquino.utils.DataUtils.obterDataComDiferencaDias;
+import static br.ce.wcaquino.utils.DataUtils.*;
 import static java.util.Arrays.asList;
 import static java.util.Calendar.MONDAY;
-import static java.util.Calendar.SATURDAY;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.*;
-import static org.junit.Assume.assumeTrue;
 import static org.mockito.Mockito.*;
 
+@RunWith(PowerMockRunner.class)
+@PrepareForTest({LocacaoService.class, DataUtils.class})
 public class LocacaoServiceTest {
 
     @InjectMocks
@@ -70,12 +74,12 @@ public class LocacaoServiceTest {
     @Test
     public void deveAlugarFilme() throws Exception {
 
-        Assume.assumeFalse(DataUtils.verificarDiaSemana(new Date() , SATURDAY));
-
         // Cenário
         Usuario usuario = umUsuario().agora();
         List<Filme> filmes =
                 asList(umFilme().comValor(5.0).agora());
+
+        PowerMockito.whenNew(Date.class).withNoArguments().thenReturn(obterData(21, 6, 2019));
 
         // Ação
         Locacao locacao = locacaoService.alugarFilme(usuario, filmes);
@@ -84,10 +88,14 @@ public class LocacaoServiceTest {
         error.checkThat(locacao.getValor(), is(equalTo(5.0)));
         error.checkThat(locacao.getValor(), is(not(5.01)));
         error.checkThat(isMesmaData(locacao.getDataLocacao(), new Date()), is(true));
+
         error.checkThat(isMesmaData(locacao.getDataRetorno(), obterDataComDiferencaDias(1)), is(true));
 
         error.checkThat(locacao.getDataLocacao(), ehHoje());
         error.checkThat(locacao.getDataRetorno(), ehHojeComDiferencaDias(1));
+
+        error.checkThat(isMesmaData(locacao.getDataLocacao(), obterData(21, 6, 2019)), is(true));
+        error.checkThat(isMesmaData(locacao.getDataRetorno(), obterData(22, 6, 2019)), is(true));
 
     }
 
@@ -128,13 +136,13 @@ public class LocacaoServiceTest {
     }
 
     @Test
-    public void deveDevolverSegundaQuandoAlugadoSabado() throws FilmeSemEstoqueException, LocadoraException {
-
-        assumeTrue(DataUtils.verificarDiaSemana(new Date() , SATURDAY));
+    public void deveDevolverSegundaQuandoAlugadoSabado() throws Exception {
 
         // Cenário
         Usuario usuario = umUsuario().agora();
         List<Filme> filmes = asList(umFilme().agora());
+
+        PowerMockito.whenNew(Date.class).withNoArguments().thenReturn(obterData(22, 6, 2019));
 
         // Ação
         Locacao retorno = locacaoService.alugarFilme(usuario, filmes);
@@ -230,3 +238,4 @@ public class LocacaoServiceTest {
     }
 
 }
+
