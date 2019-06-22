@@ -1,5 +1,6 @@
 package br.ce.wcaquino.servicos;
 
+import br.ce.wcaquino.daos.LocacaoDAO;
 import br.ce.wcaquino.entidades.Filme;
 import br.ce.wcaquino.entidades.Locacao;
 import br.ce.wcaquino.entidades.Usuario;
@@ -14,6 +15,10 @@ import java.util.List;
 import static br.ce.wcaquino.utils.DataUtils.adicionarDias;
 
 public class LocacaoService {
+
+	private LocacaoDAO dao;
+	private SPCService spcService;
+	private EmailsService emailsService;
 	
 	public Locacao alugarFilme(Usuario usuario, List<Filme> filmes) throws FilmeSemEstoqueException, LocadoraException {
 
@@ -30,6 +35,10 @@ public class LocacaoService {
 			if (filme.getEstoque() == 0) {
 				throw new FilmeSemEstoqueException();
 			}
+		}
+
+		if(spcService.possuiNegativavao(usuario)) {
+			throw new LocadoraException("Usuário Negativado");
 		}
 
 		Locacao locacao = new Locacao();
@@ -74,9 +83,30 @@ public class LocacaoService {
 		locacao.setDataRetorno(dataEntrega);
 		
 		//Salvando a locacao...	
-		//TODO adicionar método para salvar
+		dao.salvar(locacao);
 		
 		return locacao;
+	}
+
+	public void notificarAtrasos() {
+		List<Locacao> locacoes = dao.obterLocacoesPendentes();
+		for (Locacao locacao:locacoes) {
+			if(locacao.getDataRetorno().before(new Date())) {
+				emailsService.notificarAtraso(locacao.getUsuario());
+			}
+		}
+	}
+
+	public void setLocacaoDAO(LocacaoDAO dao) {
+		this.dao = dao;
+	}
+
+	public void setSPCService(SPCService spc) {
+		spcService = spc;
+	}
+
+	public void setEmailService(EmailsService emailService) {
+		this.emailsService = emailService;
 	}
 
 
