@@ -21,6 +21,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import javax.xml.crypto.Data;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -143,6 +144,24 @@ public class LocacaoServiceTest {
         List<Filme> filmes = asList(umFilme().agora());
 
         PowerMockito.whenNew(Date.class).withNoArguments().thenReturn(obterData(22, 6, 2019));
+
+        /**
+         * Para usar com Calendar.getInstance().getTime();
+         *
+         * Cenário
+         *
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.DAY_OF_WEEK, 22);
+        calendar.set(MONDAY, Calendar.JUNE);
+        calendar.set(Calendar.YEAR, 2019);
+        PowerMockito.mockStatic(Calculadora.class);
+        PowerMockito.when(Calendar.getInstance()).thenReturn(calendar);
+
+         * Verificação
+
+         PowerMockito.verifyStatic();
+         Calendar.getInstance();
+        */
 
         // Ação
         Locacao retorno = locacaoService.alugarFilme(usuario, filmes);
