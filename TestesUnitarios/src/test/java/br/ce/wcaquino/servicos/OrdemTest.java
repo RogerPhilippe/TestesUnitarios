@@ -12,12 +12,12 @@ public class OrdemTest {
 
     @Test
     public void testeA() {
-        System.out.println("Método A");
+        //System.out.println("Método A");
     }
 
     @Test
     public void testeB() {
-        System.out.println("Método B");
+        //System.out.println("Método B");
     }
 
 }

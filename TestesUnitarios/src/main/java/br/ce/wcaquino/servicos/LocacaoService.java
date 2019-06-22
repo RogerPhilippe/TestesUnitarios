@@ -37,7 +37,15 @@ public class LocacaoService {
 			}
 		}
 
-		if(spcService.possuiNegativavao(usuario)) {
+		boolean negativado = false;
+
+		try {
+			negativado = spcService.possuiNegativavao(usuario);
+		} catch (Exception e) {
+			throw new LocadoraException("Problema com SPC, tente novamente");
+		}
+
+		if(negativado) {
 			throw new LocadoraException("Usuário Negativado");
 		}
 
@@ -96,18 +104,5 @@ public class LocacaoService {
 			}
 		}
 	}
-
-	public void setLocacaoDAO(LocacaoDAO dao) {
-		this.dao = dao;
-	}
-
-	public void setSPCService(SPCService spc) {
-		spcService = spc;
-	}
-
-	public void setEmailService(EmailsService emailService) {
-		this.emailsService = emailService;
-	}
-
 
 }
