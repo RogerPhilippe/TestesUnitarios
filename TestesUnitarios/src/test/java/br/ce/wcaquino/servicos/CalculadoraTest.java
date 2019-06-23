@@ -1,14 +1,17 @@
 package br.ce.wcaquino.servicos;
 
 import br.ce.wcaquino.exceptions.NaoPodeDividirPorZeroException;
+import br.ce.wcaquino.runners.ParallelRunner;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import static org.junit.Assert.assertEquals;
 
 /**
  * São criados os métodos, cenários, ações e verificações antes das classes e objetos e entidades etc...
  */
+@RunWith(ParallelRunner.class)
 public class CalculadoraTest {
 
     private Calculadora calc;
