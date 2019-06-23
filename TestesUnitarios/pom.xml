@@ -10,16 +10,27 @@
 
   <build>
 
+    <testSourceDirectory>src</testSourceDirectory>
+
     <plugins>
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>(whatever version is current)</version>
+        <version>3.8.1</version>
         <configuration>
-          <!-- or whatever version you use -->
           <source>1.8</source>
           <target>1.8</target>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.18.1</version>
+        <configuration>
+          <threadCount>2</threadCount>
+          <parallel>all</parallel>
         </configuration>
       </plugin>
 
@@ -28,6 +39,13 @@
   </build>
 
   <dependencies>
+
+    <dependency>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-compiler-plugin</artifactId>
+      <version>3.8.1</version>
+      <type>maven-plugin</type>
+    </dependency>
 
     <!-- https://mvnrepository.com/artifact/junit/junit -->
     <dependency>
